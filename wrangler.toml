@@ -1,0 +1,34 @@
+# ═══════════════════════════════════════════════════════════════════
+# نسخه‌ی اصلاح‌شده — این فایل را جایگزین wrangler.toml مخزن کن.
+#
+# تغییر ۱: حذف خط  id = "00000000000000000000000000000000"
+#   با آن id صفر، استقرار به دنبال یک namespace ناموجود می‌گردد و شکست می‌خورد؛
+#   بدون id، دکمه‌ی Deploy to Cloudflare خودش یک فضای KV تازه می‌سازد و
+#   با متغیر KV به ورکر وصل می‌کند. (اگر فرم نام منبع را پرسید، aral بگذار)
+#
+# تغییر ۲: حذف کل بخش [vars] با PROXYIP = ""
+#   همین بخش بود که در فرم استقرار، فیلد proxyip را نشان می‌داد
+#   (کانفیگ Nova-Proxy هم بخش متغیرها ندارد). کد پنل اگر PROXYIP نباشد یا
+#   خالی باشد، از فهرست پیش‌فرض خودش استفاده می‌کند — DEFAULT_PROXY_IPS در
+#   src/storage.js:
+#     ProxyIP.NL.CMLiussss.net ، ProxyIP.DE.CMLiussss.net ،
+#     ProxyIP.US.CMLiussss.net ، nima.nscl.ir
+#   و بعداً از داخل تنظیمات خود پنل هم قابل تغییر است.
+#   اگر خواستی ProxyIP ثابت بدهی، بخش [vars] را با مقدار پرشده برگردان.
+#
+# برای استقرار با Wrangler CLI: npx wrangler kv namespace create aral
+# و سپس id خروجی را زیر binding اضافه کن.
+# ═══════════════════════════════════════════════════════════════════
+
+name = "aral"
+main = "worker-single-file.js"
+compatibility_date = "2026-04-01"
+
+# Cloudflare KV storage for multi-user panel, subscriptions, fragment & routing settings.
+# Deploy Button (deploy.workers.cloudflare.com): no `id` — Cloudflare provisions
+# a fresh KV namespace automatically and binds it as variable `KV`.
+[[kv_namespaces]]
+binding = "KV"
+
+[observability]
+enabled = false
